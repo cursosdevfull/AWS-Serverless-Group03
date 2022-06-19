@@ -1,0 +1,8 @@
+{
+  "body": {
+    "agendaId": 20,
+    "specialityId": 45,
+    "doctorId": 1,
+    "patientId": 100
+  }
+}
