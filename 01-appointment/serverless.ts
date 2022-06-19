@@ -1,6 +1,6 @@
 import type { AWS } from "@serverless/typescript";
 
-import { appointment } from "./src/functions";
+import { appointment, medic } from "./src/functions";
 
 const serverlessConfiguration: AWS = {
   service: "appointment",
@@ -30,7 +30,7 @@ const serverlessConfiguration: AWS = {
       concurrency: 10,
     },
   },
-  functions: { appointment },
+  functions: { appointment, medic },
 };
 
 module.exports = serverlessConfiguration;

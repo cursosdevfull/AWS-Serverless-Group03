@@ -1,1 +1,24 @@
-[{ "name": "Juan", "lastname": "Perez" }]
+[
+  {
+    "medic": {
+      "name": "Juan",
+      "lastname": "Perez",
+      "specialty": {
+        "id": 10,
+        "name": "Pediatra"
+      }
+    },
+    "schedules": [
+      {
+        "date": "2020-01-01",
+        "time": "08:00",
+        "status": "available"
+      },
+      {
+        "date": "2020-01-01",
+        "time": "09:00",
+        "status": "busy"
+      }
+    ]
+  }
+]
