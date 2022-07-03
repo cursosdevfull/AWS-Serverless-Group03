@@ -50,7 +50,7 @@ export const appointmentHandler = async (event) => {
   };
 
   const appointment: Appointment = new Appointment(properties);
-  const result = controller.create(appointment);
+  const result = await controller.create(appointment);
 
   return {
     statusCode: 200,

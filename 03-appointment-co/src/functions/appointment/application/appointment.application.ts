@@ -10,7 +10,7 @@ import {
 export class AppointmentApplication {
   constructor(private appointmentRepository: AppointmentRepository) {}
 
-  async create(appointment: Appointment) {
+  create(appointment: Appointment) {
     let factory: Factory;
 
     switch (appointment.countryISO) {
@@ -24,6 +24,6 @@ export class AppointmentApplication {
         factory = new FactoryEC();
         break;
     }
-    return await this.appointmentRepository.create(appointment, factory);
+    return this.appointmentRepository.create(appointment, factory);
   }
 }

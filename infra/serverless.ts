@@ -27,12 +27,13 @@ const serverlessConfiguration: AWS = {
   },
   resources: {
     Resources: {
-      S3BucketDeploymentLambdas: {
+      /* S3BucketDeploymentLambdas: {
         Type: "AWS::S3::Bucket",
+        DeletionPolicy: "Retain",
         Properties: {
           BucketName: "digital-awscurso09-${self:provider.stage}",
         },
-      },
+      }, */
       SSMAPIGatewayRestApiId: {
         Type: "AWS::SSM::Parameter",
         Properties: {
@@ -54,9 +55,32 @@ const serverlessConfiguration: AWS = {
         Properties: {
           Name: "/digital/s3-bucket-deployment-name-${self:provider.stage}",
           Type: "String",
-          Value: {
+          Value: "digital-awscurso09-${self:provider.stage}",
+          /* Value: {
             Ref: "S3BucketDeploymentLambdas",
-          },
+          }, */
+        },
+      },
+      EventBus: {
+        Type: "AWS::Events::EventBus",
+        Properties: {
+          Name: "EventBusCursoAWS09",
+        },
+      },
+      SQSDLQ: {
+        Type: "AWS::SQS::Queue",
+        Properties: {
+          MessageRetentionPeriod: 86400,
+          QueueName: "SQSDLQ-${self:provider.stage}",
+          VisibilityTimeout: 20,
+        },
+      },
+      SSMDLQ: {
+        Type: "AWS::SSM::Parameter",
+        Properties: {
+          Name: "/digital/sql-dlq-deployment-name-${self:provider.stage}",
+          Type: "String",
+          Value: { "Fn::GetAtt": ["SQSDLQ", "Arn"] },
         },
       },
     },
