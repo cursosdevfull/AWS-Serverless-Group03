@@ -47,6 +47,11 @@ const serverlessConfiguration: AWS = {
             Action: "lambda:InvokeFunction",
             Resource: "arn:aws:lambda:us-east-1:282865065290:function:*",
           },
+          {
+            Effect: "Allow",
+            Action: "dynamodb:*",
+            Resource: "arn:aws:dynamodb:us-east-1:*:table/Appointment-dev",
+          },
         ],
       },
     },
