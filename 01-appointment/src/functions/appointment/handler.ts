@@ -46,7 +46,7 @@ export const appointmentHandler = async (event) => {
     pacientLastName: body.pacientLastName,
     pacientPhone: body.pacientPhone,
     countryISO: body.countryISO,
-    status: 0,
+    status_appointment: 0,
   };
 
   const appointment: Appointment = new Appointment(properties);

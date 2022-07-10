@@ -27,13 +27,13 @@ const serverlessConfiguration: AWS = {
   },
   resources: {
     Resources: {
-      /* S3BucketDeploymentLambdas: {
+      S3BucketMedic: {
         Type: "AWS::S3::Bucket",
         DeletionPolicy: "Retain",
         Properties: {
-          BucketName: "digital-awscurso09-${self:provider.stage}",
+          BucketName: "digital-awscurso09-medic-${self:provider.stage}",
         },
-      }, */
+      },
       SSMAPIGatewayRestApiId: {
         Type: "AWS::SSM::Parameter",
         Properties: {
@@ -61,12 +61,6 @@ const serverlessConfiguration: AWS = {
           }, */
         },
       },
-      EventBus: {
-        Type: "AWS::Events::EventBus",
-        Properties: {
-          Name: "EventBusCursoAWS09",
-        },
-      },
       SQSDLQ: {
         Type: "AWS::SQS::Queue",
         Properties: {
@@ -75,12 +69,101 @@ const serverlessConfiguration: AWS = {
           VisibilityTimeout: 20,
         },
       },
+      SQSPE: {
+        Type: "AWS::SQS::Queue",
+        Properties: {
+          QueueName: "SQS_PE_${self:provider.stage}",
+          RedrivePolicy: {
+            deadLetterTargetArn: { "Fn::GetAtt": ["SQSDLQ", "Arn"] },
+            maxReceiveCount: 1,
+          },
+        },
+      },
+      EventBus: {
+        Type: "AWS::Events::EventBus",
+        Properties: {
+          Name: "EventBusCursoAWS09",
+        },
+      },
+      EventRulePE: {
+        Type: "AWS::Events::Rule",
+        Properties: {
+          EventBusName: { "Fn::GetAtt": ["EventBus", "Name"] },
+          EventPattern: {
+            source: ["appointment"],
+            "detail-type": ["appointment-create-pe"],
+          },
+          Targets: [{ Arn: { "Fn::GetAtt": ["SQSPE", "Arn"] }, Id: "SQSPE" }],
+        },
+      },
+      EventBridgeToSQSPolicy: {
+        Type: "AWS::SQS::QueuePolicy",
+        Properties: {
+          PolicyDocument: {
+            Statement: [
+              {
+                Effect: "Allow",
+                Principal: { Service: "events.amazonaws.com" },
+                Action: "sqs:*",
+                Resource: { "Fn::GetAtt": ["SQSPE", "Arn"] },
+              },
+            ],
+          },
+          Queues: [{ Ref: "SQSPE" }],
+        },
+      },
+      SSMSQSPE: {
+        Type: "AWS::SSM::Parameter",
+        Properties: {
+          Name: "/digital/sqs-pe-arn-${self:provider.stage}",
+          Type: "String",
+          Value: { "Fn::GetAtt": ["SQSPE", "Arn"] },
+        },
+      },
       SSMDLQ: {
         Type: "AWS::SSM::Parameter",
         Properties: {
           Name: "/digital/sql-dlq-deployment-name-${self:provider.stage}",
           Type: "String",
           Value: { "Fn::GetAtt": ["SQSDLQ", "Arn"] },
+        },
+      },
+      AppointmentTable: {
+        Type: "AWS::DynamoDB::Table",
+        Properties: {
+          TableName: "Appointment-${self:provider.stage}",
+          BillingMode: "PAY_PER_REQUEST",
+          AttributeDefinitions: [
+            {
+              AttributeName: "id",
+              AttributeType: "S",
+            },
+          ],
+          KeySchema: [
+            {
+              AttributeName: "id",
+              KeyType: "HASH",
+            },
+          ],
+        },
+      },
+      MedicTable: {
+        Type: "AWS::DynamoDB::Table",
+        Properties: {
+          TableName: "Medic-${self:provider.stage}",
+          BillingMode: "PAY_PER_REQUEST",
+          AttributeDefinitions: [
+            {
+              AttributeName: "id",
+              AttributeType: "S",
+            },
+          ],
+          KeySchema: [
+            {
+              AttributeName: "id",
+              KeyType: "HASH",
+            },
+          ],
         },
       },
     },

@@ -1,5 +1,6 @@
 import { Appointment } from "../domain/appointment";
 import * as AWS from "aws-sdk";
+import { v4 } from "uuid";
 
 export interface IPattern {
   Source: string;
@@ -9,22 +10,33 @@ export interface IPattern {
 //const awsLambda = new AWS.Lambda();
 const awsEventBridge = new AWS.EventBridge();
 
+const dynamodb = new AWS.DynamoDB.DocumentClient();
+
 export abstract class Factory {
   //abstract lambdaNameInvoke: string;
   abstract pattern: IPattern;
 
   async sendMessage(appointment: Appointment): Promise<any> {
     console.log(`Sending ${appointment.countryISO}`);
+    const id = v4();
 
     const parameters = {
       Entries: [
         {
           ...this.pattern,
-          Detail: JSON.stringify(appointment),
+          Detail: JSON.stringify({ ...appointment, id }),
           EventBusName: "EventBusCursoAWS09",
         },
       ],
     };
+
+    const newAppointment = { id, ...appointment };
+    await dynamodb
+      .put({
+        TableName: "Appointment-dev",
+        Item: newAppointment,
+      })
+      .promise();
 
     console.log(parameters);
 

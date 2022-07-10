@@ -5,7 +5,7 @@ export interface AppointmentFieldsRequired {
   readonly pacientName: string;
   readonly pacientLastName: string;
   readonly pacientPhone: string;
-  readonly status_appointment: number;
+  readonly status: number;
   readonly countryISO: string;
 }
 
@@ -19,7 +19,7 @@ export class Appointment {
   readonly pacientLastName: string;
   readonly pacientPhone: string;
   readonly countryISO: string;
-  status_appointment: number;
+  status: number;
 
   constructor(properties: FieldsRequired) {
     Object.assign(this, properties);
