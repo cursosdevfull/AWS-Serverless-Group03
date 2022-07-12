@@ -11,7 +11,7 @@ const serverlessConfiguration: AWS = {
     runtime: "nodejs14.x",
     stage: "${opt:stage, 'dev'}",
     deploymentBucket: {
-      name: "${ssm:/digital/s3-bucket-deployment-name-${self:provider.stage}}",
+      name: "infrastructure-dev-serverlessdeploymentbucket-19x4yzjmq8gfz",
       serverSideEncryption: "AES256",
     },
     environment: {
