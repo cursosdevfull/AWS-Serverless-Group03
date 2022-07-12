@@ -22,7 +22,7 @@ const serverlessConfiguration: AWS = {
       shouldStartNameWithService: true,
     }, */
     deploymentBucket: {
-      name: "${ssm:/digital/s3-bucket-deployment-name-${self:provider.stage}}",
+      name: "infrastructure-dev-serverlessdeploymentbucket-19x4yzjmq8gfz",
       serverSideEncryption: "AES256",
     },
     environment: {
