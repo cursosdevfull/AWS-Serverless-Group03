@@ -39,7 +39,7 @@ const serverlessConfiguration: AWS = {
         Properties: {
           Name: "/digital/api-gateway-rest-api-id-${self:provider.stage}",
           Type: "String",
-          Value: "wj33urp139",
+          Value: "h9o3t08dcf",
         },
       },
       SSMAPIGatewayRestApiRootResourceId: {
@@ -47,7 +47,7 @@ const serverlessConfiguration: AWS = {
         Properties: {
           Name: "/digital/api-gateway-rest-api-root-resource-id-${self:provider.stage}",
           Type: "String",
-          Value: "ur83wck6fa",
+          Value: "w9m6b02jz5",
         },
       },
       SSMS3BucketDeployment: {
