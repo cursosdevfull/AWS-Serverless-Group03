@@ -10,16 +10,34 @@ export const appointmentHandler = async (event) => {
   const bucketName = objS3.bucket.name;
   const key = objS3.object.key;
 
-  console.log("bucketName: " + bucketName);
-  console.log("key: " + key);
+  console.log("Parameters", JSON.stringify({ bucketName, key }));
 
   const parameters = { Bucket: bucketName, Key: key };
-
   const data = await s3.getObject(parameters).promise();
+  const body = data.Body.toString("utf-8");
+  const lines = body.split("\n");
 
-  console.log("data", data);
+  const listPromises = [];
 
-  console.log(event);
+  lines.forEach((line: string) => {
+    const dataMedic = line.split(",");
+    const newMedic = {
+      id: dataMedic[0],
+      name: dataMedic[1],
+      lastname: dataMedic[2],
+      speciality: dataMedic[3],
+    };
+    listPromises.push(
+      dynamodb
+        .put({
+          TableName: "Medic-dev",
+          Item: newMedic,
+        })
+        .promise()
+    );
+  });
+
+  await Promise.all(listPromises);
 
   return event;
 };

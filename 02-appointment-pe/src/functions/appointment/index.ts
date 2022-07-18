@@ -7,6 +7,10 @@ export default {
       sqs: {
         arn: "${ssm:/digital/sqs-pe-arn-${self:provider.stage}}",
       },
+      /*  sns: {
+        arn: "${ssm:/digital/topic-sns-arn-${self:provider.stage}}",
+        topic: "${ssm:/digital/topic-sns-name-topic-${self:provider.stage}}",
+      }, */
       /*  eventBridge: {
         eventBus:
           "arn:aws:events:us-east-1:282865065290:event-bus/EventBusCursoAWS09",

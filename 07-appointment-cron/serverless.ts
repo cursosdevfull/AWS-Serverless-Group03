@@ -3,7 +3,7 @@ import type { AWS } from "@serverless/typescript";
 import { appointment } from "./src/functions";
 
 const serverlessConfiguration: AWS = {
-  service: "appointment-synchronization",
+  service: "appointment-cron",
   frameworkVersion: "3",
   plugins: ["serverless-esbuild"],
   provider: {
@@ -19,7 +19,7 @@ const serverlessConfiguration: AWS = {
     },
     iam: {
       role: {
-        name: "appointment-synchronization-role-${self:provider.stage}",
+        name: "appointment-cron-role-${self:provider.stage}",
         statements: [
           {
             Effect: "Allow",
@@ -37,8 +37,13 @@ const serverlessConfiguration: AWS = {
           },
           {
             Effect: "Allow",
+            Action: "ses:SendEmail",
+            Resource: "*",
+          },
+          {
+            Effect: "Allow",
             Action: "s3:GetObject",
-            Resource: "arn:aws:s3:::*",
+            Resource: "arn:aws:s3:::cursoaws02/*",
           },
         ],
       },

@@ -166,6 +166,75 @@ const serverlessConfiguration: AWS = {
           ],
         },
       },
+      AuthenticationTable: {
+        Type: "AWS::DynamoDB::Table",
+        Properties: {
+          TableName: "Authentication-${self:provider.stage}",
+          BillingMode: "PAY_PER_REQUEST",
+          AttributeDefinitions: [
+            {
+              AttributeName: "id",
+              AttributeType: "S",
+            },
+          ],
+          KeySchema: [
+            {
+              AttributeName: "id",
+              KeyType: "HASH",
+            },
+          ],
+        },
+      },
+      SNSTOPICOCURSO03: {
+        Type: "AWS::SNS::Topic",
+        Properties: {
+          Subscription: [
+            {
+              Protocol: "sqs",
+              Endpoint: { "Fn::GetAtt": ["SQSPE", "Arn"] },
+            },
+          ],
+          TopicName: "SNS_TOPICO_CURSO03_${self:provider.stage}",
+        },
+      },
+      SNSToSQSPolicy: {
+        Type: "AWS::SQS::QueuePolicy",
+        Properties: {
+          Queues: [{ Ref: "SQSPE" }],
+          PolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Effect: "Allow",
+                Action: ["sqs:SendMessage"],
+                Resource: "*",
+                Principal: "*",
+                Condition: {
+                  ArnEquals: {
+                    "aws:SourceArn": { Ref: "SNSTOPICOCURSO03" },
+                  },
+                },
+              },
+            ],
+          },
+        },
+      },
+      SSMTOPICOSNS: {
+        Type: "AWS::SSM::Parameter",
+        Properties: {
+          Name: "/digital/topic-sns-arn-${self:provider.stage}",
+          Type: "String",
+          Value: { Ref: "SNSTOPICOCURSO03" },
+        },
+      },
+      SSMTOPICOSNSNAME: {
+        Type: "AWS::SSM::Parameter",
+        Properties: {
+          Name: "/digital/topic-sns-name-topic-${self:provider.stage}",
+          Type: "String",
+          Value: { "Fn::GetAtt": ["SNSTOPICOCURSO03", "TopicName"] },
+        },
+      },
     },
   },
 };

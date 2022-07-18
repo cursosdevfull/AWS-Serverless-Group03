@@ -28,6 +28,8 @@ const serverlessConfiguration: AWS = {
       LAMBDA_CORE_PE: "appointment-pe-${self:provider.stage}-appointment",
       LAMBDA_CORE_CO: "appointment-co-${self:provider.stage}-appointment",
       LAMBDA_CORE_EC: "appointment-ec-${self:provider.stage}-appointment",
+      SNS_TOPICO_CURSO03_ARN:
+        "${ssm:/digital/topic-sns-arn-${self:provider.stage}}",
     },
     iam: {
       role: {
@@ -56,6 +58,11 @@ const serverlessConfiguration: AWS = {
             Effect: "Allow",
             Action: "dynamodb:*",
             Resource: "arn:aws:dynamodb:us-east-1:*:table/Appointment-dev",
+          },
+          {
+            Effect: "Allow",
+            Action: "SNS:Publish",
+            Resource: "arn:aws:sns:us-east-1:282865065290:*",
           },
         ],
       },
