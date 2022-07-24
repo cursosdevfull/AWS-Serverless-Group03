@@ -11,25 +11,23 @@ class Token {
       exp: moment().add(20, "minutes").unix(),
     };
 
-    return jwt.encode(payload, "palabraSuperSecreta");
+    return jwt.encode(payload, process.env.JWT_SECRET);
   }
 }
 
 export const loginHandler = async (event) => {
   const body = event.body;
-  console.log(body);
 
   const result = await dynamodb
     .get({
-      TableName: "Authentication-dev",
+      TableName: "AuthenticationCurso-dev",
       Key: {
         email: body.email,
-        password: body.password,
       },
     })
     .promise();
 
-  if (result) {
+  if (result && result.Item.password === body.password) {
     return {
       statusCode: 200,
       body: Token.generate(),

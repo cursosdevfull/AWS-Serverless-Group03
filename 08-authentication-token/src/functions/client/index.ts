@@ -1,14 +1,13 @@
 import { getPathHandler } from "../libs/getPathHandler";
 
 export default {
-  handler: `${getPathHandler(__dirname)}/handler.registerHandler`,
+  handler: `${getPathHandler(__dirname)}/handler.clientHandler`,
   events: [
     {
       http: {
         method: "post",
-        path: "/register",
-        integration: "lambda",
-        private: true,
+        path: "/client",
+        authorizer: "authorizer",
       },
     },
   ],

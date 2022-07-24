@@ -1,9 +1,9 @@
 import type { AWS } from "@serverless/typescript";
 
-import { register, login, authorizer, client, list } from "./src/functions";
+import { client } from "./src/functions";
 
 const serverlessConfiguration: AWS = {
-  service: "authentication",
+  service: "authentication-cognito",
   frameworkVersion: "3",
   plugins: ["serverless-esbuild"],
   provider: {
@@ -29,7 +29,7 @@ const serverlessConfiguration: AWS = {
     },
     iam: {
       role: {
-        name: "authentication-role-${self:provider.stage}",
+        name: "authentication-cognito-role-${self:provider.stage}",
         statements: [
           {
             Effect: "Allow",
@@ -65,10 +65,9 @@ const serverlessConfiguration: AWS = {
     apiGateway: {
       restApiId: "wj33urp139",
       restApiRootResourceId: "ur83wck6fa",
-      apiKeys: ["miapikey"],
     },
   },
-  functions: { register, login, authorizer, client, list },
+  functions: { client },
 };
 
 module.exports = serverlessConfiguration;

@@ -27,6 +27,161 @@ const serverlessConfiguration: AWS = {
   },
   resources: {
     Resources: {
+      CognitoUserPool: {
+        Type: "AWS::Cognito::UserPool",
+        Properties: {
+          UserPoolName: "cognito_user_pool_aws03",
+          AutoVerifiedAttributes: ["email"],
+          EmailVerificationSubject: "Verifica tu correo electrónico",
+          EmailVerificationMessage:
+            "Por favor verifica tu correo electrónico usandoe el siguiente código: {####}",
+        },
+      },
+      CognitoUserPoolClient: {
+        Type: "AWS::Cognito::UserPoolClient",
+        Properties: {
+          ClientName: "cognito_user_pool_client_aws03",
+          GenerateSecret: false,
+          UserPoolId: {
+            Ref: "CognitoUserPool",
+          },
+          ExplicitAuthFlows: [
+            "ALLOW_USER_PASSWORD_AUTH",
+            "ALLOW_REFRESH_TOKEN_AUTH",
+          ],
+        },
+      },
+      CognitoIdentityPool: {
+        Type: "AWS::Cognito::IdentityPool",
+        Properties: {
+          IdentityPoolName: "cognito_identity_pool_aws03",
+          AllowUnauthenticatedIdentities: false,
+          CognitoIdentityProviders: [
+            {
+              ProviderName: {
+                "Fn::GetAtt": ["CognitoUserPool", "ProviderName"],
+              },
+              ClientId: {
+                Ref: "CognitoUserPoolClient",
+              },
+            },
+          ],
+        },
+      },
+      CognitoAuthRole: {
+        Type: "AWS::IAM::Role",
+        Properties: {
+          RoleName: "cognitoAuthRoleAWS03",
+          Path: "/",
+          AssumeRolePolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Effect: "Allow",
+                Principal: {
+                  Federated: "cognito-identity.amazonaws.com",
+                },
+                Action: ["sts:AssumeRoleWithWebIdentity"],
+                Condition: {
+                  StringEquals: {
+                    "cognito-identity.amazonaws.com:aud": {
+                      Ref: "CognitoIdentityPool",
+                    },
+                  },
+                },
+              },
+            ],
+          },
+          Policies: [
+            {
+              PolicyName: "CognitoAuthorizedPolicy",
+              PolicyDocument: {
+                Version: "2012-10-17",
+                Statement: [
+                  {
+                    Effect: "Allow",
+                    Action: [
+                      "mobileanalytics:PutEvents",
+                      "cognito-sync:*",
+                      "cognito-identity:*",
+                    ],
+                    Resource: "*",
+                  },
+                  {
+                    Effect: "Allow",
+                    Action: ["execute-api:Invoke"],
+                    Resource: "*",
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+      CognitoUnauthRole: {
+        Type: "AWS::IAM::Role",
+        Properties: {
+          RoleName: "cognitoUnauthRoleAWS03",
+          Path: "/",
+          AssumeRolePolicyDocument: {
+            Version: "2012-10-17",
+            Statement: [
+              {
+                Effect: "Allow",
+                Principal: {
+                  Federated: "cognito-identity.amazonaws.com",
+                },
+                Action: ["sts:AssumeRoleWithWebIdentity"],
+                Condition: {
+                  StringEquals: {
+                    "cognito-identity.amazonaws.com:aud": {
+                      Ref: "CognitoIdentityPool",
+                    },
+                  },
+                  "ForAnyValue:StringLike": {
+                    "cognito-identity.amazonaws.com:amr": "unauthenticated",
+                  },
+                },
+              },
+            ],
+          },
+          Policies: [
+            {
+              PolicyName: "CognitoAuthorizedPolicy",
+              PolicyDocument: {
+                Version: "2012-10-17",
+                Statement: [
+                  {
+                    Effect: "Allow",
+                    Action: [
+                      "mobileanalytics:PutEvents",
+                      "cognito-sync:*",
+                      "cognito-identity:*",
+                    ],
+                    Resource: "*",
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      },
+      CognitoIdentityPoolRoles: {
+        Type: "AWS::Cognito::IdentityPoolRoleAttachment",
+        Properties: {
+          IdentityPoolId: {
+            Ref: "CognitoIdentityPool",
+          },
+          Roles: {
+            authenticated: {
+              "Fn::GetAtt": ["CognitoAuthRole", "Arn"],
+            },
+            unauthenticated: {
+              "Fn::GetAtt": ["CognitoUnauthRole", "Arn"],
+            },
+          },
+        },
+      },
       S3BucketMedic: {
         Type: "AWS::S3::Bucket",
         DeletionPolicy: "Retain",
@@ -169,17 +324,17 @@ const serverlessConfiguration: AWS = {
       AuthenticationTable: {
         Type: "AWS::DynamoDB::Table",
         Properties: {
-          TableName: "Authentication-${self:provider.stage}",
+          TableName: "AuthenticationCurso-${self:provider.stage}",
           BillingMode: "PAY_PER_REQUEST",
           AttributeDefinitions: [
             {
-              AttributeName: "id",
+              AttributeName: "email",
               AttributeType: "S",
             },
           ],
           KeySchema: [
             {
-              AttributeName: "id",
+              AttributeName: "email",
               KeyType: "HASH",
             },
           ],

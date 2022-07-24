@@ -5,12 +5,11 @@ const dynamodb = new AWS.DynamoDB.DocumentClient();
 
 export const registerHandler = async (event) => {
   const body = event.body;
-  const id = v4();
 
-  const register = { id, ...body };
+  const register = { ...body };
   await dynamodb
     .put({
-      TableName: "Authentication-dev",
+      TableName: "AuthenticationCurso-dev",
       Item: register,
     })
     .promise();

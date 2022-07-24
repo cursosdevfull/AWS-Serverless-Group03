@@ -1,0 +1,8 @@
+{
+  "/dev/list": {
+    "target": "https://wj33urp139.execute-api.us-east-1.amazonaws.com/",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

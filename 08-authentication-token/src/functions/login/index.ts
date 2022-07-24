@@ -6,7 +6,7 @@ export default {
     {
       http: {
         method: "post",
-        path: "/auth/login",
+        path: "/login",
         integration: "lambda",
       },
     },
