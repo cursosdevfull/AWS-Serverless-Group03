@@ -1,0 +1,25 @@
+<div fxLayout fxLayoutAlign="center" style="padding-top: 50px">
+  <mat-card fxFlex="1 1 400px" class="mat-elevation-z12" fxLayout="column">
+    <h2>Confirmación</h2>
+    <form fxLayout="column" [formGroup]="group">
+      <mat-form-field appearance="outline">
+        <mat-label>Correo</mat-label>
+        <input type="text" matInput formControlName="email" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Código</mat-label>
+        <input type="text" matInput formControlName="code" />
+      </mat-form-field>
+      <div fxLayout fxLayoutAlign="center">
+        <button mat-flat-button color="primary" (click)="confirm()">
+          Ingresar
+        </button>
+      </div>
+      <div style="text-align: center; padding-top: 15px">
+        <a routerLink="/register">Registro</a>&nbsp;&nbsp;<a routerLink="/"
+          >Login</a
+        >
+      </div>
+    </form>
+  </mat-card>
+</div>
