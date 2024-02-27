@@ -19,7 +19,7 @@ const serverlessConfiguration: AWS = {
       shouldStartNameWithService: true,
     },
     deploymentBucket: {
-      name: "${ssm:/digital/s3-bucket-deployment-name-${self:provider.stage}}",
+      name: "infrastructure-dev-serverlessdeploymentbucket-19x4yzjmq8gfz",
       serverSideEncryption: "AES256",
     },
     environment: {
@@ -80,8 +80,8 @@ const serverlessConfiguration: AWS = {
       concurrency: 10,
     },
     apiGateway: {
-      restApiId: "wj33urp139",
-      restApiRootResourceId: "ur83wck6fa",
+      restApiId: "h9o3t08dcf",
+      restApiRootResourceId: "w9m6b02jz5",
     },
   },
   functions: { appointment, medic },
